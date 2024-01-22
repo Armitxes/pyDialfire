@@ -77,14 +77,14 @@ class DialfireCampaign(DialfireCore):
   def get_tasks(self) -> Response:
     """Get all tasks for the campaign."""
     return self.request(
-      suburl='/tasks',
+      suburl='tasks',
       method='GET',
     )
   
   def get_donotcall(self) -> Response:
     """Get DNC list."""
     return self.request(
-      suburl='/donotcall',
+      suburl='donotcall',
       method='GET',
     )
   
@@ -94,7 +94,7 @@ class DialfireCampaign(DialfireCore):
   ) -> Response:
     """Delete all entries of the DNC list matching the filter."""
     return self.request(
-      suburl='/donotcall/delete',
+      suburl='donotcall/delete',
       method='POST',
       json_request_list=json_request_list,
     )
@@ -108,7 +108,7 @@ class DialfireCampaign(DialfireCore):
     date_from = self.dialfire_date_time(date_from)
     date_to = self.dialfire_date_time(date_to)
     return self.request(
-      suburl='/donotcall/delete',
+      suburl='donotcall/delete',
       method='POST',
       data={'date_from': date_from, 'date_to': date_to},
       json_request_list=[
@@ -123,7 +123,7 @@ class DialfireCampaign(DialfireCore):
   ) -> Response:
     """Send a list of contact IDs (in JSON list format) to retrieve a batch of flat view records for those contacts."""
     return self.request(
-      suburl='/contacts/flat_view',
+      suburl='contacts/flat_view',
       method='GET',
       json_request_list=json_request_list,
     )
@@ -152,7 +152,7 @@ class DialfireCampaign(DialfireCore):
     })
 
     return self.request(
-      suburl=f'/tasks/{task_name}/contacts/create',
+      suburl=f'tasks/{task_name}/contacts/create',
       method='POST',
       data=data,
       json_request_list=json_request_list,
