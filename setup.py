@@ -23,7 +23,7 @@ setuptools.setup(
         'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    package_dir={'datev': 'src/dialfire'},
+    package_dir={'dialfire': 'src/dialfire'},
     packages=setuptools.find_packages(where='src'),
     python_requires='>=3.6',
 )
