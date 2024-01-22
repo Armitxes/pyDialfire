@@ -4,3 +4,4 @@
 
 from . import campaign
 from . import core
+from . import tenant
