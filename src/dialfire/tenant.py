@@ -13,10 +13,10 @@ class DialfireTenant(DialfireCore):
   def __init__(
     self,
     tenant_id: str,
-    tenant_token: str,
+    token: str,
   ) -> None:
     self.id: str = tenant_id
-    self.token: str = tenant_token
+    self.token: str = token
 
   def request(
     self,

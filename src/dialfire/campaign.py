@@ -14,10 +14,10 @@ class DialfireCampaign(DialfireCore):
   def __init__(
     self,
     campaign_id: str,
-    campaign_token: str,
+    token: str,
   ) -> None:
     self.id: str = campaign_id
-    self.token: str = campaign_token
+    self.token: str = token
 
   def request(
     self,
@@ -117,6 +117,20 @@ class DialfireCampaign(DialfireCore):
       ],
     )
 
+  def get_contact_flat_view(
+    self,
+    contact_id: str,
+  ) -> Response:
+    """Get a detailed view of a contact record including the task log.
+    
+    Args:
+      contact_id: ID of the contact
+    """
+    return self.request(
+      suburl=f'contacts/{contact_id}/flat_view',
+      method='GET',
+    )
+
   def get_contacts_flat_view(
     self,
     json_request_list: list[dict] = [],
@@ -124,7 +138,35 @@ class DialfireCampaign(DialfireCore):
     """Send a list of contact IDs (in JSON list format) to retrieve a batch of flat view records for those contacts."""
     return self.request(
       suburl='contacts/flat_view',
-      method='GET',
+      method='POST',
+      json_request_list=json_request_list,
+    )
+  
+  def get_contacts(
+    self,
+    json_request_list: list[dict] = [],
+  ) -> Response:
+    """Search for contacts inside a campaign.
+    
+    Args:
+      json_request_list: Filter
+        _cursor_: To iterate ALL contacts from campaign use _cursor_ and put in the value you got in response to the previous call.
+        _limit_: Limit the response size.
+    
+    json_request_list example:
+    [
+      {
+        "values": ["491"],
+        "field": "$phone",
+        "reverse":true,
+        "operator": "GT"
+      },
+      {"values": ["1"], "field": "_limit_"}
+    ]
+    """
+    return self.request(
+      suburl='contacts/filter',
+      method='POST',
       json_request_list=json_request_list,
     )
   
