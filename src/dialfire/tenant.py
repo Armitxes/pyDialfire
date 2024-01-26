@@ -217,8 +217,8 @@ class DialfireTenant(DialfireCore):
     """Delete all numbers from tenant dnc list (campaign dnc list are untouched)
     
     Data dict:
-      date_from: dialfire_date_time
-      date_to: dialfire_date_time
+      date_from: df_datetime
+      date_to: df_datetime
     """
     return self.request(
       suburl=f'donotcall/delete/all',

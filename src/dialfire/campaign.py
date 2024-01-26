@@ -105,8 +105,8 @@ class DialfireCampaign(DialfireCore):
     date_to: datetime,
   ) -> Response:
     """Delete all entries of the DNC list within the date range."""
-    date_from = self.dialfire_date_time(date_from)
-    date_to = self.dialfire_date_time(date_to)
+    date_from = self.df_datetime(date_from)
+    date_to = self.df_datetime(date_to)
     return self.request(
       suburl='donotcall/delete',
       method='POST',
