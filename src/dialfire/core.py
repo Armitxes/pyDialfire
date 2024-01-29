@@ -24,7 +24,7 @@ class DialfireCore:
     suburl: str,
     token: str,
     method: typing.Literal['GET', 'POST', 'DELETE'],
-    data: dict,
+    data: dict = {},
     json_request_list: list[dict] = [],
     files: dict = {},
   ) -> requests.Response:

@@ -22,12 +22,14 @@ class DialfireTenant(DialfireCore):
     self,
     suburl: str,
     method: typing.Literal['GET', 'POST', 'DELETE'],
+    data: dict = {},
     json_request_list: list[dict] = [],
   ) -> Response:
     return super(DialfireTenant, self).request(
       suburl=f'tenants/{self.id}/{suburl}',
       token=self.token,
       method=method,
+      data=data,
       json_request_list=json_request_list,
     )
   
