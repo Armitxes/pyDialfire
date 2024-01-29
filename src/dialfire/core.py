@@ -28,9 +28,10 @@ class DialfireCore:
     json_request_list: list[dict] = [],
     files: dict = {},
   ) -> requests.Response:
+    suburl = f'/{suburl}'.replace('//', '/')
     res = requests.request(
       method=method,
-      url=f'{BASE_API_URL}/{suburl}'.replace('//', '/'),
+      url=f'{BASE_API_URL}{suburl}',
       headers={
         'Authorization': f'Bearer {token}',
         'Content-Type': 'text/plain'
