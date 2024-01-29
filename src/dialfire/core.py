@@ -11,11 +11,17 @@ BASE_API_URL = 'https://api.dialfire.com/api'
 
 class DialfireCore:
 
-  def to_datetime(self, dt: str) -> datetime:
+  @staticmethod
+  def to_datetime(dt: str) -> datetime:
+    if not (dt and isinstance(dt, str)):
+      raise Exception('Dialfire: Invalid datetime string: {dt}')
+    
     dt_format = '%Y-%m-%dT%H:%M:%S.%f'
+    dt = dt.removesuffix('Z')
     return datetime.strptime(dt, dt_format)
 
-  def df_datetime(self, dt: datetime) -> str:
+  @staticmethod
+  def df_datetime(dt: datetime) -> str:
     dt_format = '%Y-%m-%dT%H:%M:%S.%f'
     return dt.strftime(dt_format)[:-3] + 'Z'
 
