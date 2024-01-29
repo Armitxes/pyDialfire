@@ -36,9 +36,9 @@ class DialfireCore:
         'Authorization': f'Bearer {token}',
         'Content-Type': 'text/plain'
       },
-      data=data,
-      json=json_request_list,
-      files=files,
+      data=data or None,
+      json=json_request_list or None,
+      files=files or None,
     )
 
     if res.status_code != 200:
