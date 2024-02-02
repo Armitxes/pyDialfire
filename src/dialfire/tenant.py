@@ -9,12 +9,19 @@ from dialfire.core import DialfireCore
 
 
 class DialfireTenant(DialfireCore):
+  """API interface for the Dialfire tenants."""
 
   def __init__(
     self,
     tenant_id: str,
     token: str,
   ) -> None:
+    """Initialize a new Dialfire tenant class instance.
+
+    Args:
+        tenant_id (str): ID of the tenant within dialfire.
+        token (str): API token
+    """
     self.id: str = tenant_id
     self.token: str = token
 
@@ -25,6 +32,18 @@ class DialfireTenant(DialfireCore):
     data: dict = {},
     json_request_list: list[dict] = [],
   ) -> Response:
+    """Send HTTP request to the dialfire API server for tenant related queries.
+
+    Args:
+        suburl (str): Added behind the API tenant url
+        method (typing.Literal[&#39;GET&#39;, &#39;POST&#39;, &#39;DELETE&#39;]): HTTP method
+        data (dict, optional): Request parameters.
+        json_request_list (list[dict], optional): Request parameters in JSON format.
+        files (dict, optional): files to be uploaded
+
+    Returns:
+        requests.Response: Response by the API
+    """
     return super(DialfireTenant, self).request(
       suburl=f'tenants/{self.id}/{suburl}',
       token=self.token,

@@ -10,12 +10,19 @@ from dialfire.core import DialfireCore
 
 
 class DialfireCampaign(DialfireCore):
+  """API interface for the Dialfire campaigns."""
 
   def __init__(
     self,
     campaign_id: str,
     token: str,
   ) -> None:
+    """Initialize a new Dialfire tenant class instance.
+
+    Args:
+        campaign_id (str): ID of the campaign within dialfire.
+        token (str): API token
+    """
     self.id: str = campaign_id
     self.token: str = token
 
@@ -25,13 +32,27 @@ class DialfireCampaign(DialfireCore):
     method: typing.Literal['GET', 'POST', 'DELETE'],
     data: dict = {},
     json_request_list: list[dict] = [],
+    files: dict = {},
   ) -> Response:
+    """Send HTTP request to the dialfire API server for campaign related queries.
+
+    Args:
+        suburl (str): Added behind the API campaign url
+        method (typing.Literal[&#39;GET&#39;, &#39;POST&#39;, &#39;DELETE&#39;]): HTTP method
+        data (dict, optional): Request parameters.
+        json_request_list (list[dict], optional): Request parameters in JSON format.
+        files (dict, optional): files to be uploaded
+
+    Returns:
+        requests.Response: Response by the API
+    """
     return super(DialfireCampaign, self).request(
       suburl=f'campaigns/{self.id}/{suburl}',
       token=self.token,
       method=method,
       data=data,
       json_request_list=json_request_list,
+      files=files,
     )
 
   def get_file(self, path: str) -> Response:
