@@ -33,8 +33,3 @@ df_dt: str = DialfireCampaign.df_datetime(py_dt)  # -> 2024-01-31T01:02:03.045Z
 df_dt: str = DialfireTenant.df_datetime(py_dt)  # -> 2024-01-31T01:02:03.045Z
 
 ```
-
-
-
-
-Typing anCode documentation Google Python Style Guide
