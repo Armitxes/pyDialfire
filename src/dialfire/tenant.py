@@ -3,7 +3,6 @@
 # Refer to the "LICENSE" file at the root folder of this project for more information.
 
 import typing
-from datetime import datetime
 from requests import Response
 from dialfire.core import DialfireCore
 
