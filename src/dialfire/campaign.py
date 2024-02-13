@@ -5,8 +5,7 @@
 import typing
 from datetime import datetime
 from io import BufferedReader
-from requests import Response
-from dialfire.core import DialfireCore
+from dialfire.core import DialfireCore, DiafireResponse
 
 
 class DialfireCampaign(DialfireCore):
@@ -20,8 +19,8 @@ class DialfireCampaign(DialfireCore):
     """Initialize a new Dialfire tenant class instance.
 
     Args:
-        campaign_id (str): ID of the campaign within dialfire.
-        token (str): API token
+      campaign_id (str): ID of the campaign within dialfire.
+      token (str): API token
     """
     self.id: str = campaign_id
     self.token: str = token
@@ -29,22 +28,27 @@ class DialfireCampaign(DialfireCore):
   def request(
     self,
     suburl: str,
-    method: typing.Literal['GET', 'POST', 'DELETE'],
+    method: typing.Literal['GET', 'POST', 'PUT', 'DELETE'],
     data: dict = {},
     json_request_list: list[dict] = [],
     files: dict = {},
-  ) -> Response:
+    cursor: str = '',
+    limit: int = 0,
+  ) -> DiafireResponse:
     """Send HTTP request to the dialfire API server for campaign related queries.
 
     Args:
-        suburl (str): Added behind the API campaign url
-        method (typing.Literal[&#39;GET&#39;, &#39;POST&#39;, &#39;DELETE&#39;]): HTTP method
-        data (dict, optional): Request parameters.
-        json_request_list (list[dict], optional): Request parameters in JSON format.
-        files (dict, optional): files to be uploaded
+      suburl: Added behind the API campaign url
+      token: Request related token
+      method: HTTP method
+      data (optional): Request parameters.
+      json_request_list (optional): Request parameters in JSON format.
+      files (optional): files to be uploaded
+      cursor (optional): cursor of previous request
+      limit (optional): maximum amount of results returned
 
     Returns:
-        requests.Response: Response by the API
+      DiafireResponse: Response by the API
     """
     return super(DialfireCampaign, self).request(
       suburl=f'campaigns/{self.id}/{suburl}',
@@ -53,18 +57,20 @@ class DialfireCampaign(DialfireCore):
       data=data,
       json_request_list=json_request_list,
       files=files,
+      cursor=cursor,
+      limit=limit,
     )
 
-  def get_file(self, path: str) -> Response:
+  def get_file(self, path: str) -> DiafireResponse:
     """Get a file from the resources folder of the campaign.
-    
+
     The resources folder can contain sub-folders, too.
     Read access to the "public" subfolder is granted without authorization.
     So this can be used to externally reference public campaign resources, like for images in an email.
 
     Args:
       path: The path to the file, including the file name and its extension
-    
+
     Returns:
       Response object
     """
@@ -72,8 +78,8 @@ class DialfireCampaign(DialfireCore):
       suburl=f'resources/{path}',
       method='GET',
     )
-  
-  def put_file(self, filename: str, file: BufferedReader) -> Response:
+
+  def put_file(self, filename: str, file: BufferedReader) -> DiafireResponse:
     """Upload a file to the resources folder of the campaign.
 
     Args:
@@ -83,10 +89,10 @@ class DialfireCampaign(DialfireCore):
     return self.request(
       suburl=f'resources/{filename}',
       method='PUT',
-      file={'data': (filename, file)},
+      files={'data': (filename, file)},
     )
 
-  def delete_file(self, path: str) -> Response:
+  def delete_file(self, path: str) -> DiafireResponse:
     """Delete a file from the resources folder of the campaign.
 
     Args:
@@ -97,55 +103,55 @@ class DialfireCampaign(DialfireCore):
       method='DELETE',
     )
 
-  def get_tasks(self) -> Response:
+  def get_tasks(self) -> DiafireResponse:
     """Get all tasks for the campaign."""
     return self.request(
       suburl='tasks',
       method='GET',
     )
-  
-  def get_donotcall(self) -> Response:
+
+  def get_donotcall(self) -> DiafireResponse:
     """Get DNC list."""
     return self.request(
       suburl='donotcall',
       method='GET',
     )
-  
+
   def delete_filtered_donotcall(
     self,
     json_request_list: list[dict] = [],
-  ) -> Response:
+  ) -> DiafireResponse:
     """Delete all entries of the DNC list matching the filter."""
     return self.request(
       suburl='donotcall/delete',
       method='POST',
       json_request_list=json_request_list,
     )
-  
+
   def delete_all_donotcall(
     self,
     date_from: datetime,
     date_to: datetime,
-  ) -> Response:
+  ) -> DiafireResponse:
     """Delete all entries of the DNC list within the date range."""
-    date_from = DialfireCampaign.df_datetime(date_from)
-    date_to = DialfireCampaign.df_datetime(date_to)
+    str_from = DialfireCampaign.df_datetime(date_from)
+    str_to = DialfireCampaign.df_datetime(date_to)
     return self.request(
       suburl='donotcall/delete',
       method='POST',
-      data={'date_from': date_from, 'date_to': date_to},
+      data={'date_from': str_from, 'date_to': str_to},
       json_request_list=[
-        {"values": [date_from], "field": "date_from"},
-        {"values": [date_to], "field": "date_to"}
+        {"values": [str_from], "field": "date_from"},
+        {"values": [str_to], "field": "date_to"}
       ],
     )
 
   def get_contact_flat_view(
     self,
     contact_id: str,
-  ) -> Response:
+  ) -> DiafireResponse:
     """Get a detailed view of a contact record including the task log.
-    
+
     Args:
       contact_id: ID of the contact
     """
@@ -157,25 +163,27 @@ class DialfireCampaign(DialfireCore):
   def get_contacts_flat_view(
     self,
     json_request_list: list[dict] = [],
-  ) -> Response:
+  ) -> DiafireResponse:
     """Send a list of contact IDs (in JSON list format) to retrieve a batch of flat view records for those contacts."""
     return self.request(
       suburl='contacts/flat_view',
       method='POST',
       json_request_list=json_request_list,
     )
-  
+
   def get_contacts(
     self,
     json_request_list: list[dict] = [],
-  ) -> Response:
+    cursor: str = '',
+    limit: int = 100,
+  ) -> DiafireResponse:
     """Search for contacts inside a campaign.
-    
+
     Args:
-      json_request_list: Filter
-        _cursor_: To iterate ALL contacts from campaign use _cursor_ and put in the value you got in response to the previous call.
-        _limit_: Limit the response size.
-    
+      json_request_list: Filter for dialfire field values. See example.
+      cursor: To iterate ALL contacts from campaign use _cursor_ and put in the value you got in response to the previous call.
+      limit: Limit the response size.
+
     json_request_list example:
     [
       {
@@ -183,16 +191,17 @@ class DialfireCampaign(DialfireCore):
         "field": "$phone",
         "reverse":true,
         "operator": "GT"
-      },
-      {"values": ["1"], "field": "_limit_"}
+      }
     ]
     """
     return self.request(
       suburl='contacts/filter',
       method='POST',
       json_request_list=json_request_list,
+      cursor=cursor,
+      limit=limit,
     )
-  
+
   def create_contact(
     self,
     task_name: str,
@@ -200,9 +209,9 @@ class DialfireCampaign(DialfireCore):
     phone: str,
     data: dict = {},
     json_request_list: list[dict] = [],
-  ) -> Response:
+  ) -> DiafireResponse:
     """Create a new contact record in an existing task.
-      
+
     The payload is a JSON object containing any number of fields.
     If a $ref field is provided this field can later be used as an external reference in addition to the $id field.
 

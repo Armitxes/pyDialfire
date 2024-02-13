@@ -9,6 +9,111 @@ from datetime import datetime
 BASE_API_URL = 'https://api.dialfire.com/api'
 
 
+class DialfireRequest:
+
+  def __init__(
+    self,
+    suburl: str,
+    token: str,
+    method: typing.Literal['GET', 'POST', 'PUT', 'DELETE'],
+    data: dict = {},
+    json_request_list: list[dict] = [],
+    files: dict = {},
+    cursor: str = '',
+    limit: int = 0,
+  ):
+    """Send HTTP request to the dialfire API server
+
+    Args:
+      suburl: Added behind the API base url
+      token: Request related token
+      method: HTTP method
+      data (optional): Request parameters.
+      json_request_list (optional): Request parameters in JSON format.
+      files (optional): files to be uploaded
+      cursor (optional): cursor of previous request
+      limit (optional): maximum amount of results returned
+
+    Raises:
+      Exception: When request failed.
+    """
+
+    self.suburl = f'/{suburl}'.replace('//', '/')
+    self.url = f'{BASE_API_URL}{self.suburl}'
+    self.method = method
+    self.token = token
+    self.data = data
+    self.base_request = json_request_list
+    self.files = files
+    self.cursor = cursor
+    self.limit = limit
+    self.send()
+
+  def send(self):
+    json_request_list = self.base_request
+    if self.cursor:
+      json_request_list.append({"values": [str(self.cursor)], "field": "_cursor_"})
+
+    if self.limit:
+      json_request_list.append({"values": [str(self.limit)], "field": "_limit_"})
+
+    res = requests.request(
+      method=self.method,
+      url=self.url,
+      headers={
+        'Authorization': f'Bearer {self.token}',
+        'Content-Type': 'text/plain'
+      },
+      data=self.data or None,
+      json=json_request_list or None,
+      files=self.files or None,
+    )
+    return DiafireResponse(request=self, response=res)
+
+class DiafireResponse:
+
+  def __init__(self, request: DialfireRequest, response: requests.Response):
+    self.request = request
+    self.headers = response.headers
+    self.status_code = response.status_code
+    self.text = response.text
+    self.url = response.url
+    self.json: dict[str, typing.Any] = {}
+    self.matches: list = []
+    self.cursor: str = ''
+    self.limit: int = request.limit
+
+    if self.status_code != 200:
+      return
+
+    try:
+      self.json = response.json()
+
+      # Cursor
+      self.cursor = (
+        self.json.get('cursor')
+        or self.json.get('__cursor__')
+        or ''
+      )
+
+      # Limit
+      self.limit = (
+        self.json.get('limit')
+        or self.json.get('__limit__')
+        or request.limit
+      )
+
+      # Matches / Hits
+      self.matches = self.json.get('hits') or []
+
+    except requests.exceptions.JSONDecodeError:
+      return
+
+  def next_page(self) -> 'DiafireResponse':
+    self.request.cursor = self.cursor
+    return self.request.send()
+
+
 class DialfireCore:
 
   @staticmethod
@@ -51,41 +156,39 @@ class DialfireCore:
     self,
     suburl: str,
     token: str,
-    method: typing.Literal['GET', 'POST', 'DELETE'],
+    method: typing.Literal['GET', 'POST', 'PUT', 'DELETE'],
     data: dict = {},
     json_request_list: list[dict] = [],
     files: dict = {},
-  ) -> requests.Response:
+    cursor: str = '',
+    limit: int = 0,
+  ) -> DiafireResponse:
     """Send HTTP request to the dialfire API server
 
     Args:
-        suburl (str): Added behind the API base url
-        token (str): Request related token
-        method (typing.Literal[&#39;GET&#39;, &#39;POST&#39;, &#39;DELETE&#39;]): HTTP method
-        data (dict, optional): Request parameters.
-        json_request_list (list[dict], optional): Request parameters in JSON format.
-        files (dict, optional): files to be uploaded
+      suburl: Added behind the API base url
+      token: Request related token
+      method: HTTP method
+      data (optional): Request parameters.
+      json_request_list (optional): Request parameters in JSON format.
+      files (optional): files to be uploaded
+      cursor (optional): cursor of previous request
+      limit (optional): maximum amount of results returned
 
     Raises:
-        Exception: When request failed.
+      Exception: When request failed.
 
     Returns:
-        requests.Response: Response by the API
+      DiafireResponse: Response by the API
     """
-    suburl = f'/{suburl}'.replace('//', '/')
-    res = requests.request(
+    res = DialfireRequest(
+      suburl=suburl,
+      token=token,
       method=method,
-      url=f'{BASE_API_URL}{suburl}',
-      headers={
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'text/plain'
-      },
-      data=data or None,
-      json=json_request_list or None,
-      files=files or None,
+      data=data,
+      json_request_list=json_request_list,
+      files=files,
+      cursor=cursor,
+      limit=limit,
     )
-
-    if res.status_code != 200:
-      raise Exception(f'Dialfire API: {res.content}')
-    
-    return res
+    return res.send()
