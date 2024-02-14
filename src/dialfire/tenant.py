@@ -3,7 +3,7 @@
 # Refer to the "LICENSE" file at the root folder of this project for more information.
 
 import typing
-from dialfire.core import DialfireCore, DiafireResponse
+from dialfire.core import DialfireCore, DialfireResponse
 
 
 class DialfireTenant(DialfireCore):
@@ -31,7 +31,7 @@ class DialfireTenant(DialfireCore):
     json_request_list: list[dict] = [],
     cursor: str = '',
     limit: int = 0,
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Send HTTP request to the dialfire API server for tenant related queries.
 
     Args:
@@ -45,7 +45,7 @@ class DialfireTenant(DialfireCore):
       limit (optional): maximum amount of results returned
 
     Returns:
-      DiafireResponse: Response by the API
+      DialfireResponse: Response by the API
     """
     return super(DialfireTenant, self).request(
       suburl=f'tenants/{self.id}/{suburl}',
@@ -57,7 +57,7 @@ class DialfireTenant(DialfireCore):
       limit=limit,
     )
 
-  def get_campaigns(self) -> DiafireResponse:
+  def get_campaigns(self) -> DialfireResponse:
     """Get all campaings related to the tenant."""
     return self.request(
       suburl='campaigns',
@@ -65,14 +65,14 @@ class DialfireTenant(DialfireCore):
     )
 
   # region: Users
-  def get_users(self) -> DiafireResponse:
+  def get_users(self) -> DialfireResponse:
     """Get all users related to the tenant."""
     return self.request(
       suburl='users',
       method='GET',
     )
 
-  def get_user(self, user_id: str) -> DiafireResponse:
+  def get_user(self, user_id: str) -> DialfireResponse:
     """Get user associated with the tenant.
 
     Args:
@@ -83,7 +83,7 @@ class DialfireTenant(DialfireCore):
       method='GET',
     )
 
-  def create_user(self, data: dict) -> DiafireResponse:
+  def create_user(self, data: dict) -> DialfireResponse:
     """Create user within the tenant.
 
     Args:
@@ -96,7 +96,7 @@ class DialfireTenant(DialfireCore):
     )
 
 
-  def update_user(self, user_id: str, data: dict) -> DiafireResponse:
+  def update_user(self, user_id: str, data: dict) -> DialfireResponse:
     """Update user associated with the tenant.
 
     Args:
@@ -108,7 +108,7 @@ class DialfireTenant(DialfireCore):
       data=data,
     )
 
-  def delete_user(self, user_id: str) -> DiafireResponse:
+  def delete_user(self, user_id: str) -> DialfireResponse:
     """Delete the user associated with the tenant.
 
     Args:
@@ -121,7 +121,7 @@ class DialfireTenant(DialfireCore):
   # endregion
 
   # region Team
-  def add_user_to_team(self, user_id: str, team_id: str) -> DiafireResponse:
+  def add_user_to_team(self, user_id: str, team_id: str) -> DialfireResponse:
     """Add user to team associated with the tenant.
 
     Args:
@@ -133,7 +133,7 @@ class DialfireTenant(DialfireCore):
       method='POST',
     )
 
-  def remove_user_from_team(self, user_id: str, team_id: str) -> DiafireResponse:
+  def remove_user_from_team(self, user_id: str, team_id: str) -> DialfireResponse:
     """Remove the user from team associated with the tenant.
 
     Args:
@@ -147,14 +147,14 @@ class DialfireTenant(DialfireCore):
   # endregion
 
   # region: Lines
-  def get_inbound_lines(self) -> DiafireResponse:
+  def get_inbound_lines(self) -> DialfireResponse:
     """List inbound lines."""
     return self.request(
       suburl='lines',
       method='GET',
     )
 
-  def get_inbound_line(self, line_id: str, json_request_list: list[dict] = []) -> DiafireResponse:
+  def get_inbound_line(self, line_id: str, json_request_list: list[dict] = []) -> DialfireResponse:
     """List inbound calls of specific line.
 
     Args:
@@ -167,14 +167,14 @@ class DialfireTenant(DialfireCore):
       json_request_list=json_request_list,
     )
 
-  def get_line_stats(self) -> DiafireResponse:
+  def get_line_stats(self) -> DialfireResponse:
     """Get inbound line statistics."""
     return self.request(
       suburl='lines/stats',
       method='GET',
     )
 
-  def get_user_line_stats(self, user_id: str, data: dict) -> DiafireResponse:
+  def get_user_line_stats(self, user_id: str, data: dict) -> DialfireResponse:
     """Fetch a list of all activities of the specfied user.
 
     Args:
@@ -191,7 +191,7 @@ class DialfireTenant(DialfireCore):
       data=data,
     )
 
-  def add_line_callback(self, line_id: str, data: dict) -> DiafireResponse:
+  def add_line_callback(self, line_id: str, data: dict) -> DialfireResponse:
     """Create callback in inbound line.
 
     Args:
@@ -212,7 +212,7 @@ class DialfireTenant(DialfireCore):
   # endregion
 
   # region Activities
-  def get_activity_reports(self, data: dict) -> DiafireResponse:
+  def get_activity_reports(self, data: dict) -> DialfireResponse:
     """Fetch a list of activities of all users of the specified tenant.
 
     Data dict:
@@ -226,7 +226,7 @@ class DialfireTenant(DialfireCore):
     )
 
 
-  def get_activity_report(self, user_id: str, report_id: str) -> DiafireResponse:
+  def get_activity_report(self, user_id: str, report_id: str) -> DialfireResponse:
     """Fetch the activity report with the specified id.
 
     Args:
@@ -240,7 +240,7 @@ class DialfireTenant(DialfireCore):
   # endregion
 
   # region DoNotCall
-  def delete_all_donotcall(self, data: dict) -> DiafireResponse:
+  def delete_all_donotcall(self, data: dict) -> DialfireResponse:
     """Delete all numbers from tenant dnc list (campaign dnc list are untouched)
 
     Data dict:

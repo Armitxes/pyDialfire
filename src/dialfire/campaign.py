@@ -5,7 +5,7 @@
 import typing
 from datetime import datetime
 from io import BufferedReader
-from dialfire.core import DialfireCore, DiafireResponse
+from dialfire.core import DialfireCore, DialfireResponse
 
 
 class DialfireCampaign(DialfireCore):
@@ -34,7 +34,7 @@ class DialfireCampaign(DialfireCore):
     files: dict = {},
     cursor: str = '',
     limit: int = 0,
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Send HTTP request to the dialfire API server for campaign related queries.
 
     Args:
@@ -48,7 +48,7 @@ class DialfireCampaign(DialfireCore):
       limit (optional): maximum amount of results returned
 
     Returns:
-      DiafireResponse: Response by the API
+      DialfireResponse: Response by the API
     """
     return super(DialfireCampaign, self).request(
       suburl=f'campaigns/{self.id}/{suburl}',
@@ -61,7 +61,7 @@ class DialfireCampaign(DialfireCore):
       limit=limit,
     )
 
-  def get_file(self, path: str) -> DiafireResponse:
+  def get_file(self, path: str) -> DialfireResponse:
     """Get a file from the resources folder of the campaign.
 
     The resources folder can contain sub-folders, too.
@@ -79,7 +79,7 @@ class DialfireCampaign(DialfireCore):
       method='GET',
     )
 
-  def put_file(self, filename: str, file: BufferedReader) -> DiafireResponse:
+  def put_file(self, filename: str, file: BufferedReader) -> DialfireResponse:
     """Upload a file to the resources folder of the campaign.
 
     Args:
@@ -92,7 +92,7 @@ class DialfireCampaign(DialfireCore):
       files={'data': (filename, file)},
     )
 
-  def delete_file(self, path: str) -> DiafireResponse:
+  def delete_file(self, path: str) -> DialfireResponse:
     """Delete a file from the resources folder of the campaign.
 
     Args:
@@ -103,14 +103,14 @@ class DialfireCampaign(DialfireCore):
       method='DELETE',
     )
 
-  def get_tasks(self) -> DiafireResponse:
+  def get_tasks(self) -> DialfireResponse:
     """Get all tasks for the campaign."""
     return self.request(
       suburl='tasks',
       method='GET',
     )
 
-  def get_donotcall(self) -> DiafireResponse:
+  def get_donotcall(self) -> DialfireResponse:
     """Get DNC list."""
     return self.request(
       suburl='donotcall',
@@ -120,7 +120,7 @@ class DialfireCampaign(DialfireCore):
   def delete_filtered_donotcall(
     self,
     json_request_list: list[dict] = [],
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Delete all entries of the DNC list matching the filter."""
     return self.request(
       suburl='donotcall/delete',
@@ -132,7 +132,7 @@ class DialfireCampaign(DialfireCore):
     self,
     date_from: datetime,
     date_to: datetime,
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Delete all entries of the DNC list within the date range."""
     str_from = DialfireCampaign.df_datetime(date_from)
     str_to = DialfireCampaign.df_datetime(date_to)
@@ -150,7 +150,7 @@ class DialfireCampaign(DialfireCore):
   def get_contact_flat_view(
     self,
     contact_id: str,
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Get a detailed view of a contact record including the task log.
 
     Args:
@@ -164,7 +164,7 @@ class DialfireCampaign(DialfireCore):
   def get_contacts_flat_view(
     self,
     json_request_list: list[dict] = [],
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Send a list of contact IDs (in JSON list format) to retrieve a batch of flat view records for those contacts."""
     return self.request(
       suburl='contacts/flat_view',
@@ -177,7 +177,7 @@ class DialfireCampaign(DialfireCore):
     json_request_list: list[dict] = [],
     cursor: str = '',
     limit: int = 100,
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Search for contacts inside a campaign.
 
     Args:
@@ -210,7 +210,7 @@ class DialfireCampaign(DialfireCore):
     phone: str,
     data: dict = {},
     json_request_list: list[dict] = [],
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Create a new contact record in an existing task.
 
     The payload is a JSON object containing any number of fields.
@@ -237,7 +237,7 @@ class DialfireCampaign(DialfireCore):
     self,
     contact_id: str,
     data: dict = {},
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Update an existing contact
 
     Args:

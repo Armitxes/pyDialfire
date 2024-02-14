@@ -68,9 +68,9 @@ class DialfireRequest:
       json=json_request_list or None,
       files=self.files or None,
     )
-    return DiafireResponse(request=self, response=res)
+    return DialfireResponse(request=self, response=res)
 
-class DiafireResponse:
+class DialfireResponse:
 
   def __init__(self, request: DialfireRequest, response: requests.Response):
     self.request = request
@@ -109,7 +109,7 @@ class DiafireResponse:
     except requests.exceptions.JSONDecodeError:
       return
 
-  def next_page(self) -> 'DiafireResponse':
+  def next_page(self) -> 'DialfireResponse':
     self.request.cursor = self.cursor
     return self.request.send()
 
@@ -162,7 +162,7 @@ class DialfireCore:
     files: dict = {},
     cursor: str = '',
     limit: int = 0,
-  ) -> DiafireResponse:
+  ) -> DialfireResponse:
     """Send HTTP request to the dialfire API server
 
     Args:
@@ -179,7 +179,7 @@ class DialfireCore:
       Exception: When request failed.
 
     Returns:
-      DiafireResponse: Response by the API
+      DialfireResponse: Response by the API
     """
     res = DialfireRequest(
       suburl=suburl,
