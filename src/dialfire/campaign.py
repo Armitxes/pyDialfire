@@ -146,6 +146,7 @@ class DialfireCampaign(DialfireCore):
       ],
     )
 
+  # region Contacts
   def get_contact_flat_view(
     self,
     contact_id: str,
@@ -231,3 +232,21 @@ class DialfireCampaign(DialfireCore):
       data=data,
       json_request_list=json_request_list,
     )
+
+  def update_contact(
+    self,
+    contact_id: str,
+    data: dict = {},
+  ) -> DiafireResponse:
+    """Update an existing contact
+
+    Args:
+      contact_id: Dialfire contact id
+      data (dict, optional): Dict of fields to update
+    """
+    return self.request(
+      suburl=f'contacts/{contact_id}/update',
+      method='POST',
+      data=data,
+    )
+  # endregion
