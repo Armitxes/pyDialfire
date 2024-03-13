@@ -2,8 +2,7 @@
 # This work is licensed under the GNU General Public License v3.0
 # Refer to the "LICENSE" file at the root folder of this project for more information.
 
-import requests
-import typing
+import requests, typing
 from datetime import datetime
 
 BASE_API_URL = 'https://api.dialfire.com/api'
@@ -16,8 +15,7 @@ class DialfireRequest:
     suburl: str,
     token: str,
     method: typing.Literal['GET', 'POST', 'PUT', 'DELETE'],
-    data: dict = {},
-    json_request_list: list[dict] = [],
+    data: str | dict | list[dict] = [],
     files: dict = {},
     cursor: str = '',
     limit: int = 0,
@@ -28,8 +26,7 @@ class DialfireRequest:
       suburl: Added behind the API base url
       token: Request related token
       method: HTTP method
-      data (optional): Request parameters.
-      json_request_list (optional): Request parameters in JSON format.
+      data (optional): Request body
       files (optional): files to be uploaded
       cursor (optional): cursor of previous request
       limit (optional): maximum amount of results returned
@@ -43,19 +40,20 @@ class DialfireRequest:
     self.method = method
     self.token = token
     self.data = data
-    self.base_request = json_request_list
     self.files = files
     self.cursor = cursor
     self.limit = limit
     self.send()
 
   def send(self):
-    json_request_list = self.base_request
-    if self.cursor:
-      json_request_list.append({"values": [str(self.cursor)], "field": "_cursor_"})
+    data = self.data
 
-    if self.limit:
-      json_request_list.append({"values": [str(self.limit)], "field": "_limit_"})
+    if isinstance(data, list):
+      if self.cursor:
+        data.append({"values": [str(self.cursor)], "field": "_cursor_"})
+
+      if self.limit:
+        data.append({"values": [str(self.limit)], "field": "_limit_"})
 
     res = requests.request(
       method=self.method,
@@ -64,11 +62,12 @@ class DialfireRequest:
         'Authorization': f'Bearer {self.token}',
         'Content-Type': 'text/plain'
       },
-      data=self.data or None,
-      json=json_request_list or None,
+      data=data if data and isinstance(data, str) else None,
+      json=data if data and isinstance(data, (dict, list)) else None,
       files=self.files or None,
     )
     return DialfireResponse(request=self, response=res)
+
 
 class DialfireResponse:
 
@@ -157,8 +156,7 @@ class DialfireCore:
     suburl: str,
     token: str,
     method: typing.Literal['GET', 'POST', 'PUT', 'DELETE'],
-    data: dict = {},
-    json_request_list: list[dict] = [],
+    data: str | dict | list[dict] = [],
     files: dict = {},
     cursor: str = '',
     limit: int = 0,
@@ -170,7 +168,6 @@ class DialfireCore:
       token: Request related token
       method: HTTP method
       data (optional): Request parameters.
-      json_request_list (optional): Request parameters in JSON format.
       files (optional): files to be uploaded
       cursor (optional): cursor of previous request
       limit (optional): maximum amount of results returned
@@ -178,7 +175,7 @@ class DialfireCore:
     Raises:
       Exception: When request failed.
 
-    Returns:
+    Returns:s
       DialfireResponse: Response by the API
     """
     res = DialfireRequest(
@@ -186,7 +183,6 @@ class DialfireCore:
       token=token,
       method=method,
       data=data,
-      json_request_list=json_request_list,
       files=files,
       cursor=cursor,
       limit=limit,

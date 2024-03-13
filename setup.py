@@ -5,12 +5,13 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='pyDialfire',
-    version='0.1.3',
+    version='0.1.4',
     author='Armitxes',
     author_email='support@armitxes.net',
     description='Access Dialfire API via python.',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    license='GPLv3+',
     url='https://armitxes.net/Project/pyDialfire',
     project_urls={
         'Bug Tracker': 'https://github.com/Armitxes/pyDATEV/issues',

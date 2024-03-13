@@ -27,8 +27,7 @@ class DialfireTenant(DialfireCore):
     self,
     suburl: str,
     method: typing.Literal['GET', 'POST', 'DELETE'],
-    data: dict = {},
-    json_request_list: list[dict] = [],
+    data: str | dict | list[dict] = [],
     cursor: str = '',
     limit: int = 0,
   ) -> DialfireResponse:
@@ -39,7 +38,6 @@ class DialfireTenant(DialfireCore):
       token: Request related token
       method: HTTP method
       data (optional): Request parameters.
-      json_request_list (optional): Request parameters in JSON format.
       files (optional): files to be uploaded
       cursor (optional): cursor of previous request
       limit (optional): maximum amount of results returned
@@ -52,7 +50,6 @@ class DialfireTenant(DialfireCore):
       token=self.token,
       method=method,
       data=data,
-      json_request_list=json_request_list,
       cursor=cursor,
       limit=limit,
     )
@@ -90,11 +87,10 @@ class DialfireTenant(DialfireCore):
       user_id (str): ID of the user
     """
     return self.request(
-      suburl=f'users/create',
+      suburl='users/create',
       method='POST',
       data=data,
     )
-
 
   def update_user(self, user_id: str, data: dict) -> DialfireResponse:
     """Update user associated with the tenant.
@@ -154,17 +150,25 @@ class DialfireTenant(DialfireCore):
       method='GET',
     )
 
-  def get_inbound_line(self, line_id: str, json_request_list: list[dict] = []) -> DialfireResponse:
+  def get_inbound_line(
+    self,
+    line_id: str,
+    data: list[dict] = [],
+    cursor: str = '',
+    limit: int = 0,
+  ) -> DialfireResponse:
     """List inbound calls of specific line.
 
     Args:
       line_id (str): ID of the line
-      json_request_list: query parameters. Valid: cursor, limit, start, end
+      data: query parameters. Valid: start, end
     """
     return self.request(
       suburl=f'lines/{line_id}/calls/',
       method='GET',
-      json_request_list=json_request_list,
+      cursor=cursor,
+      limit=limit,
+      data=data,
     )
 
   def get_line_stats(self) -> DialfireResponse:
@@ -225,7 +229,6 @@ class DialfireTenant(DialfireCore):
       data=data,
     )
 
-
   def get_activity_report(self, user_id: str, report_id: str) -> DialfireResponse:
     """Fetch the activity report with the specified id.
 
@@ -248,7 +251,7 @@ class DialfireTenant(DialfireCore):
       date_to: df_datetime
     """
     return self.request(
-      suburl=f'donotcall/delete/all',
+      suburl='donotcall/delete/all',
       method='POST',
       data=data,
     )

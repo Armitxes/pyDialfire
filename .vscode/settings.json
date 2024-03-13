@@ -1,11 +1,12 @@
 {
-    "python.analysis.typeCheckingMode": "basic",
     "editor.autoClosingBrackets": "languageDefined",
     "editor.bracketPairColorization.enabled": true,
     "editor.trimAutoWhitespace": true,
     "editor.insertSpaces": true,
     "editor.wordWrap": "on",
+    "editor.renderFinalNewline": "dimmed",
     "files.trimTrailingWhitespace": true,
+    "python.analysis.typeCheckingMode": "basic",
     "[python]": {
         "editor.rulers": [
             {
@@ -21,7 +22,8 @@
                 "color": "#FF0000"
             }
         ],
-        "editor.tabSize": 4
+        "editor.tabSize": 2,
+        "files.insertFinalNewline": true,
     },
     "[xml]": {
         "editor.rulers": [

@@ -29,8 +29,7 @@ class DialfireCampaign(DialfireCore):
     self,
     suburl: str,
     method: typing.Literal['GET', 'POST', 'PUT', 'DELETE'],
-    data: dict = {},
-    json_request_list: list[dict] = [],
+    data: str | dict | list[dict] = [],
     files: dict = {},
     cursor: str = '',
     limit: int = 0,
@@ -42,7 +41,6 @@ class DialfireCampaign(DialfireCore):
       token: Request related token
       method: HTTP method
       data (optional): Request parameters.
-      json_request_list (optional): Request parameters in JSON format.
       files (optional): files to be uploaded
       cursor (optional): cursor of previous request
       limit (optional): maximum amount of results returned
@@ -55,7 +53,6 @@ class DialfireCampaign(DialfireCore):
       token=self.token,
       method=method,
       data=data,
-      json_request_list=json_request_list,
       files=files,
       cursor=cursor,
       limit=limit,
@@ -119,13 +116,13 @@ class DialfireCampaign(DialfireCore):
 
   def delete_filtered_donotcall(
     self,
-    json_request_list: list[dict] = [],
+    data: list[dict] = [],
   ) -> DialfireResponse:
     """Delete all entries of the DNC list matching the filter."""
     return self.request(
       suburl='donotcall/delete',
       method='POST',
-      json_request_list=json_request_list,
+      data=data,
     )
 
   def delete_all_donotcall(
@@ -139,8 +136,7 @@ class DialfireCampaign(DialfireCore):
     return self.request(
       suburl='donotcall/delete',
       method='POST',
-      data={'date_from': str_from, 'date_to': str_to},
-      json_request_list=[
+      data=[
         {"values": [str_from], "field": "date_from"},
         {"values": [str_to], "field": "date_to"}
       ],
@@ -163,29 +159,29 @@ class DialfireCampaign(DialfireCore):
 
   def get_contacts_flat_view(
     self,
-    json_request_list: list[dict] = [],
+    data: list[dict] = [],
   ) -> DialfireResponse:
     """Send a list of contact IDs (in JSON list format) to retrieve a batch of flat view records for those contacts."""
     return self.request(
       suburl='contacts/flat_view',
       method='POST',
-      json_request_list=json_request_list,
+      data=data,
     )
 
   def get_contacts(
     self,
-    json_request_list: list[dict] = [],
+    data: list[dict] = [],
     cursor: str = '',
     limit: int = 100,
   ) -> DialfireResponse:
     """Search for contacts inside a campaign.
 
     Args:
-      json_request_list: Filter for dialfire field values. See example.
-      cursor: To iterate ALL contacts from campaign use _cursor_ and put in the value you got in response to the previous call.
+      data: Filter for dialfire field values. See example.
+      cursor: Cursor value of the previous call.
       limit: Limit the response size.
 
-    json_request_list example:
+    data example:
     [
       {
         "values": ["491"],
@@ -198,7 +194,7 @@ class DialfireCampaign(DialfireCore):
     return self.request(
       suburl='contacts/filter',
       method='POST',
-      json_request_list=json_request_list,
+      data=data,
       cursor=cursor,
       limit=limit,
     )
@@ -209,7 +205,6 @@ class DialfireCampaign(DialfireCore):
     ref: str,
     phone: str,
     data: dict = {},
-    json_request_list: list[dict] = [],
   ) -> DialfireResponse:
     """Create a new contact record in an existing task.
 
@@ -220,6 +215,7 @@ class DialfireCampaign(DialfireCore):
       task_name: Dialfire task name
       ref: External reference - typically the record id used in an external CRM system
       phone: Phone number - preferably in E164 format, but will be re-formatted according to the country settings
+      data: key, value dict. Key must match the field name to be updated with given value.
     """
     data.update({
       '$ref': ref,
@@ -230,7 +226,6 @@ class DialfireCampaign(DialfireCore):
       suburl=f'tasks/{task_name}/contacts/create',
       method='POST',
       data=data,
-      json_request_list=json_request_list,
     )
 
   def update_contact(
