@@ -26,14 +26,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: vars
       run: |
-        echo "github.ref: ${github.ref}"
-        echo "github.ref_name: ${github.ref_name}"
-        echo "pip_path: ${pip_path}"
+        echo "github.ref: ${{ github.ref }}"
+        echo "github.ref_name: ${{ github.ref_name }}"
+        echo "pip_path: ${{ pip_path }}"
     - name: pip requirements
       run: |
         python -m pip install --upgrade pip
         python -m pip install flake8
-        python -m pip install pip install ${pip_path}
+        python -m pip install pip install ${{ pip_path }}
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: flake8
       run: |
