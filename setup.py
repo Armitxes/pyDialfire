@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 setuptools.setup(
     name='pyDialfire',
-    version='0.1.4',
+    version='0.1.5',
     author='Armitxes',
     author_email='support@armitxes.net',
     description='Access Dialfire API via python.',
@@ -27,4 +27,7 @@ setuptools.setup(
     package_dir={'dialfire': 'src/dialfire'},
     packages=setuptools.find_packages(where='src'),
     python_requires='>=3.6',
+    install_requires=[
+        'requests',
+    ],
 )
