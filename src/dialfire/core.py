@@ -4,6 +4,7 @@
 
 import requests, typing
 from datetime import datetime
+from json.decoder import JSONDecodeError
 
 BASE_API_URL = 'https://api.dialfire.com/api'
 
@@ -105,7 +106,7 @@ class DialfireResponse:
       # Matches / Hits
       self.matches = self.json.get('hits') or []
 
-    except requests.exceptions.JSONDecodeError:
+    except JSONDecodeError:
       return
 
   def next_page(self) -> 'DialfireResponse':
