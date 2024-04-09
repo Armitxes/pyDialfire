@@ -108,6 +108,10 @@ class DialfireResponse:
 
     except JSONDecodeError:
       return
+    except Exception:
+      # There are too man JSONDecodeError exception sources
+      # from json, simplejson, requests... too much to cover all.
+      return
 
   def next_page(self) -> 'DialfireResponse':
     self.request.cursor = self.cursor
